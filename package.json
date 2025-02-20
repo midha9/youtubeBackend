@@ -15,5 +15,11 @@
   "bugs": {
     "url": "https://github.com/midha9/youtubeBackend/issues"
   },
-  "homepage": "https://github.com/midha9/youtubeBackend#readme"
+  "homepage": "https://github.com/midha9/youtubeBackend#readme",
+  "dependencies": {
+    "-": "^0.0.1"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.9"
+  }
 }
