@@ -1,33 +1,44 @@
 import { v2 as cloudinary } from "cloudinary";
-import { response } from "express";
 import fs from "fs";
 
 cloudinary.config({
-  cloud_name: process.evn.CLOUDINARY_CLOUD_NAME,
-  api_key: process.evn.CLOUDINARY_API_KEY,
-  api_secret: process.evn.CLOUDINARY_API_SECRET,
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+  api_key: process.env.CLOUDINARY_API_KEY,
+  api_secret: process.env.CLOUDINARY_API_SECRET,
 });
 
-cloudinary.v2.uploader(
-  "https://upload.wikimedia.org/wikipedia/commons/a/ae/Olympic_flag.jpg",
+// Test Upload (Optional)
+cloudinary.uploader.upload(
+  "testing.jpg",
   { public_id: "olympic_flag" },
   function (error, result) {
-    console.log(result);
+    if (error) {
+      console.error("Cloudinary Upload Error:", error);
+    } else {
+      console.log("Cloudinary Upload Result:", result.url);
+    }
   }
 );
 
 const uploadOnCloudinary = async (localFilePath) => {
   try {
     if (!localFilePath) return null;
-    // upload the file on cloudinary
-    cloudinary.uploader.upload(localFilePath, {
+
+    // Upload the file to Cloudinary
+    const result = await cloudinary.uploader.upload(localFilePath, {
       resource_type: "auto",
     });
-    // file has been uploaded successfull
-    console.log("file is uploaded on cloudinary", response.url);
-    return response;
+
+    // console.log("File uploaded on Cloudinary:", result.url);
+    fs.unlinkSync(localFilePath);
+    return result;
   } catch (error) {
-    fs.unlinkSync(localFilePath); // remove the locally saved temporary file as the upload operation got failed
+    console.error("Cloudinary Upload Failed:", error.message);
+
+    if (fs.existsSync(localFilePath)) {
+      fs.unlinkSync(localFilePath); // Remove temp file if upload fails
+    }
+
     return null;
   }
 };
